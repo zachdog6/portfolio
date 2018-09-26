@@ -1,0 +1,64 @@
+body { 
+  font-size:62.5%;
+  background: #fffdd0;
+}
+
+html{
+  padding: 0;
+}
+
+.login-table{
+  font-size: 1rem;
+  margin: auto;
+  margin-top: 1.5rem;
+}
+
+.header{
+  text-align: center;
+  background: #add8e6;
+  padding: 1.5rem;
+  margin-bottom: .5rem;
+}
+
+.header h1{
+  margin:0;
+}
+
+.main{
+  text-align: center;
+  font-size: 1rem;
+}
+
+.main h2{
+  margin: 0;
+}
+
+.main h3{
+  margin: 0;
+  text-decoration: underline;
+}
+
+.buttons{
+  width: 20rem;
+  margin: auto;
+  text-align: left;
+}
+
+.buttons button{
+  margin: 1px;
+}
+
+.error{
+  margin: 1rem auto;
+  width: 20rem;
+  font-size: 1rem;
+  color: red;
+  text-align: center;
+}
+
+.result{
+  margin: 1rem auto;
+  width: 20rem;
+  font-size: 1rem;
+  text-align: center;
+}
