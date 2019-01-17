@@ -13,7 +13,8 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { user: { id: "", name: "", email: "", username: "", password: "" }, inLogin: true, message: "" }
+    this.state = { user: { id: "", name: "", email: "", username: "", password: "" }, inLogin: true, message: "",
+                  id:"", putId:"", name:"", email:"", username:"", password:"", post:false, put:false}
     
     this.login = this.login.bind(this);
     this.getAll = this.getAll.bind(this);
@@ -29,50 +30,79 @@ class App extends Component {
     this.savePutId= this.savePutId.bind(this);
     this.displayPut = this.displayPut.bind(this);
     this.delete = this.delete.bind(this);
-
-    this.id = -1;
-    this.putId = -1;
-    this.name = "";
-    this.email = "";
-    this.username = "";
-    this.password = "";
+    this.cancel = this.cancel.bind(this);
   }
 
   render() {
-    if (this.state.inLogin) //login page
+    if (this.state.inLogin){ //login page
+      let data = {login:this.login, post:this.post, saveEmail:this.saveEmail, saveName:this.saveName, 
+              savePassword:this.savePassword, saveUsername:this.saveUsername, username:this.state.username,
+              password:this.state.password, name:this.state.name, email:this.state.email}
       return (
         <div>
           <Header />
-          <Login login={this.login} />
+          <Login data={data}/>
           {this.state.message}
         </div>
       );
+    }
+    else if(this.state.post){
+      return(
+        <div>
+          <Header />
+          <div className="main">
+            <input type="text" placeholder="Name" onChange={this.saveName} value={this.state.name}/><br />
+            <input type="text" placeholder="Email" onChange={this.saveEmail} value={this.state.email}/><br />
+            <input type="text" placeholder="Username" onChange={this.saveUsername} value={this.state.username}/><br />
+            <input type="text" placeholder="Password" onChange={this.savePassword} value={this.state.password}/><br />
+            <button onClick={this.post}>Post</button><button onClick={this.cancel}>Cancel</button>
+          </div>
+        </div>
+      );
+    }
+    else if(this.state.put){
+      return(
+        <div>
+          <Header />
+          <div className="main">
+            <input type="number" placeholder="Id" onChange={this.savePutId} value={this.state.putId}/><br />
+            <input type="text" placeholder="Name" onChange={this.saveName} value={this.state.name}/><br />
+            <input type="text" placeholder="Email" onChange={this.saveEmail} value={this.state.email}/><br />
+            <input type="text" placeholder="Username" onChange={this.saveUsername} value={this.state.username}/><br />
+            <input type="text" placeholder="Password" onChange={this.savePassword} value={this.state.password}/><br />
+            <button onClick={this.put}>Put</button><button onClick={this.cancel}>Cancel</button>
+          </div>
+        </div>
+      );
+    }
     else { //main page where CRUD operations are called
       return (
-        <div className="main">
+        <div>
           <Header />
-          <h2>Hello {this.state.user.name}!</h2>
-          <br />
-          <div className="buttons">
-          <input type="number" placeholder="id" onChange={this.saveId} /><br />
+          <div className="main">
+            <h2>Hello {this.state.user.name}!</h2>
+            <br />
+            <input type="number" placeholder="id" onChange={this.saveId} value={this.state.id}/><br />
             <button onClick={this.getOne}>Get</button> <button onClick={this.delete}>Delete</button><br />
             <br />
-            <button onClick={this.getAll}>Get All</button><br />
-            <button onClick={this.displayPost}>Post</button><br />
-            <button onClick={this.displayPut}>Put</button>
+            <button onClick={this.getAll}>Get All</button><button onClick={this.displayPost}>Post</button><button onClick={this.displayPut}>Put</button>
+            <br />
+            {this.state.message}
           </div>
-          <br />
-          {this.state.message}
         </div>
       );
     }
   }
 
+  cancel(){
+    this.setState({put:false, post:false});
+  }
+
   delete(){
-    if(this.id === this.state.user.id)
+    if(this.state.id === this.state.user.id)
       this.setState({ message: <p className="error">Can't Delete Yourself!</p>});
-    if (this.id > -1) {
-      axios.delete('http://localhost:8080/api/employee/' + this.id).then(response => {
+    if (this.state.id > -1) {
+      axios.delete('http://localhost:8080/api/employee/' + this.state.id).then(response => {
         this.setState({ message: <p className="result">{response.data}</p> });
       }).catch(err => { this.setState({ message: <p className="error">{err.response.data}</p> }) });
     }
@@ -83,14 +113,7 @@ class App extends Component {
    */
   displayPost() {
     this.setState({
-      message:
-        <div key="post">
-          <input type="text" placeholder="Name" onChange={this.saveName} /><br />
-          <input type="text" placeholder="Email" onChange={this.saveEmail} /><br />
-          <input type="text" placeholder="Username" onChange={this.saveUsername} /><br />
-          <input type="text" placeholder="Password" onChange={this.savePassword} /><br />
-          <button onClick={this.post}>Post</button>
-        </div>
+      post:true
     });
   }
 
@@ -99,46 +122,36 @@ class App extends Component {
    */
   displayPut() {
     this.setState({
-      message:
-        <div key="put">
-          <input type="number" placeholder="Id" onChange={this.savePutId} /><br />
-          <input type="text" placeholder="Name" onChange={this.saveName} /><br />
-          <input type="text" placeholder="Email" onChange={this.saveEmail} /><br />
-          <input type="text" placeholder="Username" onChange={this.saveUsername} /><br />
-          <input type="text" placeholder="Password" onChange={this.savePassword} /><br />
-          <button onClick={this.put}>Put</button>
-        </div>
+      put:true
     });
   }
 
   put(){
     let go = true;
 
-    if ((this.putId < 0) ||(this.username === "") || (this.email === "") || (this.password === "") || (this.username === ""))
+    if ((this.state.username === "") || (this.state.email === "") || 
+        (this.state.password === "") || (this.state.username === ""))
       go = false;
 
     if (go) {
       let data = {
         user: {
-          username: this.username,
-          password: this.password,
-          name: this.name,
-          email: this.email
+          username: this.state.username,
+          password: this.state.password,
+          name: this.state.name,
+          email: this.state.email
         }
       };
-
-      axios.put('http://localhost:8080/api/employee/' + this.putId, data).then(response => {
-        this.setState({ message: <p className="result">{response.data}</p> });
-        if(this.putId === this.state.user.id){
-          this.setState(prevState => ({user: { id: prevState.user.id, name: this.name, email: this.email, 
-            username: this.username, password: this.password }}));
+      
+      let putId = this.state.putId;
+      axios.put('http://localhost:8080/api/employee/' + this.state.putId, data).then(response => {
+        this.setState({ message: <p className="result">{response.data}</p>, username:"", password:"", name:"", email:"", putId:"", put:false});
+        if(putId === this.state.user.id){
+          this.setState(prevState => ({user: { id: prevState.user.id, name: prevState.name, email: prevState.email, 
+            username: prevState.username, password: prevState.password }}));
         }
-        this.username = "";
-        this.password = "";
-        this.email = "";
-        this.name = "";
-        this.putId = -1;
-      }).catch(err => { this.setState({ message: <p className="error">{err.response.data}</p> }) });
+      }).catch(err => { this.setState({ message: <p className="error">{err.response.data}</p>, username:"", 
+          password:"", name:"", email:"", putId:"", put:false}) });
     }
   }
 
@@ -146,78 +159,72 @@ class App extends Component {
 
     let go = true;
 
-    if ((this.username === "") || (this.email === "") || (this.password === "") || (this.username === ""))
+    if ((this.state.username === "") || (this.state.email === "") || (this.state.password === "") || (this.state.name === ""))
       go = false;
 
     if (go) {
       let data = {
         user: {
-          username: this.username,
-          password: this.password,
-          name: this.name,
-          email: this.email
+          username: this.state.username,
+          password: this.state.password,
+          name: this.state.name,
+          email: this.state.email
         }
       };
 
       axios.post('http://localhost:8080/api/employee', data).then(response => {
-        this.setState({ message: <p className="result">{response.data}</p> });
-        this.username = "";
-        this.password = "";
-        this.email = "";
-        this.name = "";
-      }).catch(err => { this.setState({ message: <p className="error">{err.response.data}</p> }) });
+        this.setState({ message: <p className="result">{response.data}</p>, username:"", password:"", name:"", email:"", post:false});
+      }).catch(err => { this.setState({ message: <p className="error">{err.response.data}</p>, username:"", password:"", name:"", email:"", post:false}) });
     }
   }
 
 
   savePutId(event){
-    this.putId = event.target.value;
+    this.setState({putId:event.target.value});
   }
 
   saveName(event) {
-    this.name = event.target.value;
+    this.setState({name:event.target.value});
   }
 
   saveEmail(event) {
-    this.email = event.target.value;
+    this.setState({email:event.target.value});
   }
 
   saveUsername(event) {
-    this.username = event.target.value;
+    this.setState({username:event.target.value});
   }
 
   savePassword(event) {
-    this.password = event.target.value;
+    this.setState({password:event.target.value});
   }
 
   /**
    * handles get by id
    */
   getOne() {
-    if (this.id > -1) {
-      axios.get('http://localhost:8080/api/employee/' + this.id).then(response => {
+      axios.get('http://localhost:8080/api/employee/' + this.state.id).then(response => {
         this.setState({
           message:
-            <div>
-              <h3>Employee: {this.id}</h3>
+            <div className="result">
+              <h3>Employee: {this.state.id}</h3>
               <p>
                 Name: {response.data.name}, email: {response.data.email}
               </p>
             </div>
         });
       }).catch(err => { this.setState({ message: <p className="error">{err.response.data}</p> }) });
-    }
   }
 
   saveId(event) {
-    this.id = event.target.value;
+    this.setState({id:event.target.value});
   }
 
   getAll() {
     axios.get('http://localhost:8080/api/employee').then(response => {
       this.setState({
         message:
-          <div>
+          <div className="result">
             <h3>Employee List</h3>
             {response.data.map(user => {
               return (
@@ -237,20 +244,17 @@ class App extends Component {
    * @param {*} username username of user to login
    * @param {*} password password of user to login
    */
-  login(username, password) {
-    this.setState(prevState => ({ user: { name: prevState.user.name, email: prevState.user.email, username: username, password: password } }));
-
-    let data = {
+  login() {let data = {
       user: {
-        username: username,
-        password: password
+        username: this.state.username,
+        password: this.state.password
       }
     };
 
     axios.post('http://localhost:8080/api/employee/login', data).then(response => {
       this.setState({
-        inLogin: false, user: { id: response.data.id, name: response.data.name, email: response.data.email, username: response.data.username, password: password },
-        message: ""
+        inLogin: false, user: { id: response.data.id, name: response.data.name, email: response.data.email, username: response.data.username, password: this.state.password },
+        message: "", username:"", password:"", name:"", email:""
       });
     }).catch(err => { this.setState({ message: <p className="error">{err.response.data}</p> }) });
   }

@@ -7,15 +7,10 @@ html{
   padding: 0;
 }
 
-.login-table{
-  font-size: 1rem;
-  margin: auto;
-  margin-top: 1.5rem;
-}
-
 .header{
   text-align: center;
   background: #add8e6;
+  width: 100%;
   padding: 1.5rem;
   margin-bottom: .5rem;
 }
@@ -25,8 +20,13 @@ html{
 }
 
 .main{
-  text-align: center;
+  width: 200px;
+  margin: 2rem auto;
   font-size: 1rem;
+}
+
+.login-main{
+  text-align: left;
 }
 
 .main h2{
@@ -38,27 +38,15 @@ html{
   text-decoration: underline;
 }
 
-.buttons{
-  width: 20rem;
-  margin: auto;
-  text-align: left;
-}
-
-.buttons button{
-  margin: 1px;
-}
-
 .error{
-  margin: 1rem auto;
+  margin: 2rem auto;
   width: 20rem;
   font-size: 1rem;
   color: red;
-  text-align: center;
 }
 
 .result{
-  margin: 1rem auto;
+  margin: 2rem auto;
   width: 20rem;
   font-size: 1rem;
-  text-align: center;
 }

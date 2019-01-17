@@ -23,7 +23,7 @@ const EmployeeDB = sequelize.define('emp_dtl', {
     salt: { type: Sequelize.TEXT }
 }, { timestamps: false, freezeTableName: true, });
 
-EmployeeDB.sync();
+EmployeeDB.sync({ force: true });
 
 module.exports.close = () => {
     sequelize.close();
