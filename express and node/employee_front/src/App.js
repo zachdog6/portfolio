@@ -14,7 +14,7 @@ class App extends Component {
     super(props);
 
     this.state = { user: { id: "", name: "", email: "", username: "", password: "" }, inLogin: true, message: "",
-                  id:"", putId:"", name:"", email:"", username:"", password:"", post:false, put:false}
+                  id:"", putId:"", name:"", email:"", username:"", password:"", post:false, put:false};
     
     this.login = this.login.bind(this);
     this.getAll = this.getAll.bind(this);
@@ -31,6 +31,7 @@ class App extends Component {
     this.displayPut = this.displayPut.bind(this);
     this.delete = this.delete.bind(this);
     this.cancel = this.cancel.bind(this);
+    this.logout = this.logout.bind(this);
   }
 
   render() {
@@ -40,7 +41,7 @@ class App extends Component {
               password:this.state.password, name:this.state.name, email:this.state.email}
       return (
         <div>
-          <Header />
+          <Header login={true}/>
           <Login data={data}/>
           {this.state.message}
         </div>
@@ -49,41 +50,43 @@ class App extends Component {
     else if(this.state.post){
       return(
         <div>
-          <Header />
-          <div className="main">
+          <Header login={false} logout={this.logout}/>
+          <form className="main" onSubmit={this.post}>
             <input type="text" placeholder="Name" onChange={this.saveName} value={this.state.name}/><br />
             <input type="text" placeholder="Email" onChange={this.saveEmail} value={this.state.email}/><br />
             <input type="text" placeholder="Username" onChange={this.saveUsername} value={this.state.username}/><br />
-            <input type="text" placeholder="Password" onChange={this.savePassword} value={this.state.password}/><br />
-            <button onClick={this.post}>Post</button><button onClick={this.cancel}>Cancel</button>
-          </div>
+            <input type="password" placeholder="Password" onChange={this.savePassword} value={this.state.password}/><br />
+            <button type="submit">Post</button><button onClick={this.cancel}>Cancel</button>
+          </form>
         </div>
       );
     }
     else if(this.state.put){
       return(
         <div>
-          <Header />
-          <div className="main">
+          <Header login={false} logout={this.logout}/>
+          <form className="main" onSubmit={this.put}>
             <input type="number" placeholder="Id" onChange={this.savePutId} value={this.state.putId}/><br />
             <input type="text" placeholder="Name" onChange={this.saveName} value={this.state.name}/><br />
             <input type="text" placeholder="Email" onChange={this.saveEmail} value={this.state.email}/><br />
             <input type="text" placeholder="Username" onChange={this.saveUsername} value={this.state.username}/><br />
-            <input type="text" placeholder="Password" onChange={this.savePassword} value={this.state.password}/><br />
-            <button onClick={this.put}>Put</button><button onClick={this.cancel}>Cancel</button>
-          </div>
+            <input type="password" placeholder="Password" onChange={this.savePassword} value={this.state.password}/><br />
+            <button type="submit">Put</button><button onClick={this.cancel}>Cancel</button>
+          </form>
         </div>
       );
     }
     else { //main page where CRUD operations are called
       return (
         <div>
-          <Header />
+          <Header login={false} logout={this.logout}/>
           <div className="main">
             <h2>Hello {this.state.user.name}!</h2>
             <br />
-            <input type="number" placeholder="id" onChange={this.saveId} value={this.state.id}/><br />
-            <button onClick={this.getOne}>Get</button> <button onClick={this.delete}>Delete</button><br />
+            <form onSubmit={this.getOne}>
+              <input type="number" placeholder="id" onChange={this.saveId} value={this.state.id}/><br />
+              <button type="submit">Get</button> <button onClick={this.delete}>Delete</button>
+            </form>
             <br />
             <button onClick={this.getAll}>Get All</button><button onClick={this.displayPost}>Post</button><button onClick={this.displayPut}>Put</button>
             <br />
@@ -92,6 +95,11 @@ class App extends Component {
         </div>
       );
     }
+  }
+
+  logout(){
+    this.setState({user: { id: "", name: "", email: "", username: "", password: "" }, inLogin: true, message: "",
+                  id:"", putId:"", name:"", email:"", username:"", password:"", post:false, put:false});
   }
 
   cancel(){
@@ -126,8 +134,11 @@ class App extends Component {
     });
   }
 
-  put(){
+  put(event){
     let go = true;
+
+    if(event !== undefined)
+      event.preventDefault();
 
     if ((this.state.username === "") || (this.state.email === "") || 
         (this.state.password === "") || (this.state.username === ""))
@@ -155,9 +166,12 @@ class App extends Component {
     }
   }
 
-  post() {
+  post(event) {
 
     let go = true;
+
+    if(event !== undefined)
+      event.preventDefault();
 
     if ((this.state.username === "") || (this.state.email === "") || (this.state.password === "") || (this.state.name === ""))
       go = false;
@@ -202,7 +216,10 @@ class App extends Component {
   /**
    * handles get by id
    */
-  getOne() {
+  getOne(event) {
+      if(event !== undefined)
+        event.preventDefault();
+
       axios.get('http://localhost:8080/api/employee/' + this.state.id).then(response => {
         this.setState({
           message:

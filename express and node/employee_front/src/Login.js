@@ -17,7 +17,7 @@ class Login extends Component {
     render () {
         if(this.state.login){
             return(
-                <div className="main">
+                <form className="main" onSubmit={this.login}>
                     <table className="login-table">
                         <tr>
                             <td>Username:</td>
@@ -25,23 +25,23 @@ class Login extends Component {
                         </tr>
                         <tr>
                             <td>Password:</td>
-                            <td><input type="text" onChange={this.savePassword} value={this.props.data.password}/></td>
+                            <td><input type="password" onChange={this.savePassword} value={this.props.data.password}/></td>
                         </tr>
                     </table><br />
-                    <button onClick={this.login}>Login</button><button onClick={this.register}>Register</button>
-                </div>
+                    <button type="submit">Login</button><button onClick={this.register}>Register</button>
+                </form>
             );
         }
         else{
             return(
-                <table className="login-table">
+                <form className="main" onSubmit={this.register}>
                     <tr>
                         <td>Username:</td>
                         <td><input type="text" onChange={this.saveUsername} value={this.props.data.username}/></td>
                     </tr>
                     <tr>
                         <td>Password:</td>
-                        <td><input type="text" onChange={this.savePassword} value={this.props.data.password}/></td>
+                        <td><input type="password" onChange={this.savePassword} value={this.props.data.password}/></td>
                     </tr>
                     <tr>
                         <td>Name:</td>
@@ -52,23 +52,25 @@ class Login extends Component {
                         <td><input type="text" onChange={this.saveEmail} value={this.props.data.email}/></td>
                     </tr>
                     <tr>
-                        <td><button onClick={this.register}>Register</button></td>
+                        <td><button type="submit">Register</button></td>
                         <td></td>
                     </tr>
-                </table>
+                </form>
             );
         }
     }
 
-    login(){
+    login(event){
+        event.preventDefault()
         this.props.data.login();
     }
 
-    register(){
+    register(event){
         if(this.state.login){
             this.setState({login:false});
         }
         else if((this.username !== "") && (this.email !== "") && (this.password !== "") && (this.name !== "")){
+            event.preventDefault()
             this.props.data.post();
             this.setState({login:true})
         }
