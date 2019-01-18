@@ -32,17 +32,15 @@ class App extends Component {
     this.delete = this.delete.bind(this);
     this.cancel = this.cancel.bind(this);
     this.logout = this.logout.bind(this);
+    this.register = this.register.bind(this);
   }
 
   render() {
     if (this.state.inLogin){ //login page
-      let data = {login:this.login, post:this.post, saveEmail:this.saveEmail, saveName:this.saveName, 
-              savePassword:this.savePassword, saveUsername:this.saveUsername, username:this.state.username,
-              password:this.state.password, name:this.state.name, email:this.state.email}
       return (
         <div>
           <Header login={true}/>
-          <Login data={data}/>
+          <Login login={this.login} register={this.register}/>
           {this.state.message}
         </div>
       );
@@ -56,7 +54,7 @@ class App extends Component {
             <input type="text" placeholder="Email" onChange={this.saveEmail} value={this.state.email}/><br />
             <input type="text" placeholder="Username" onChange={this.saveUsername} value={this.state.username}/><br />
             <input type="password" placeholder="Password" onChange={this.savePassword} value={this.state.password}/><br />
-            <button type="submit">Post</button><button onClick={this.cancel}>Cancel</button>
+            <button type="submit">Post</button><button type="button" onClick={this.cancel}>Cancel</button>
           </form>
         </div>
       );
@@ -71,7 +69,7 @@ class App extends Component {
             <input type="text" placeholder="Email" onChange={this.saveEmail} value={this.state.email}/><br />
             <input type="text" placeholder="Username" onChange={this.saveUsername} value={this.state.username}/><br />
             <input type="password" placeholder="Password" onChange={this.savePassword} value={this.state.password}/><br />
-            <button type="submit">Put</button><button onClick={this.cancel}>Cancel</button>
+            <button type="submit">Put</button><button type="button" onClick={this.cancel}>Cancel</button>
           </form>
         </div>
       );
@@ -85,10 +83,10 @@ class App extends Component {
             <br />
             <form onSubmit={this.getOne}>
               <input type="number" placeholder="id" onChange={this.saveId} value={this.state.id}/><br />
-              <button type="submit">Get</button> <button onClick={this.delete}>Delete</button>
+              <button type="submit">Get</button> <button type="button" onClick={this.delete}>Delete</button>
             </form>
             <br />
-            <button onClick={this.getAll}>Get All</button><button onClick={this.displayPost}>Post</button><button onClick={this.displayPut}>Put</button>
+            <button type="button" onClick={this.getAll}>Get All</button><button type="button" onClick={this.displayPost}>Post</button><button type="button" onClick={this.displayPut}>Put</button>
             <br />
             {this.state.message}
           </div>
@@ -107,9 +105,10 @@ class App extends Component {
   }
 
   delete(){
-    if(this.state.id === this.state.user.id)
+    if(this.state.id === this.state.user.id){
       this.setState({ message: <p className="error">Can't Delete Yourself!</p>});
-    if (this.state.id > -1) {
+    }
+    else if (this.state.id !== "") {
       axios.delete('http://localhost:8080/api/employee/' + this.state.id).then(response => {
         this.setState({ message: <p className="result">{response.data}</p> });
       }).catch(err => { this.setState({ message: <p className="error">{err.response.data}</p> }) });
@@ -166,6 +165,21 @@ class App extends Component {
     }
   }
 
+  register(username, password, email, name){
+    let data = {
+      user: {
+        username: username,
+        password: password,
+        name: name,
+        email: email
+      }
+    };
+
+    axios.post('http://localhost:8080/api/employee', data).then(response => {
+        this.setState({ message: <p className="result">{response.data}</p>});
+      }).catch(err => { this.setState({ message: <p className="error">{err.response.data}</p>})});
+  }
+
   post(event) {
 
     let go = true;
@@ -194,7 +208,7 @@ class App extends Component {
 
 
   savePutId(event){
-    this.setState({putId:event.target.value});
+    this.setState({putId:parseInt(event.target.value, 10)});
   }
 
   saveName(event) {
@@ -234,7 +248,7 @@ class App extends Component {
   }
 
   saveId(event) {
-    this.setState({id:event.target.value});
+    this.setState({id:parseInt(event.target.value, 10)});
   }
 
   getAll() {
@@ -261,17 +275,16 @@ class App extends Component {
    * @param {*} username username of user to login
    * @param {*} password password of user to login
    */
-  login() {let data = {
+  login(username, password) {let data = {
       user: {
-        username: this.state.username,
-        password: this.state.password
+        username: username,
+        password: password
       }
     };
 
     axios.post('http://localhost:8080/api/employee/login', data).then(response => {
       this.setState({
-        inLogin: false, user: { id: response.data.id, name: response.data.name, email: response.data.email, username: response.data.username, password: this.state.password },
-        message: "", username:"", password:"", name:"", email:""
+        inLogin: false, user: { id: response.data.id, name: response.data.name, email: response.data.email, username: response.data.username, password: this.state.password }
       });
     }).catch(err => { this.setState({ message: <p className="error">{err.response.data}</p> }) });
   }

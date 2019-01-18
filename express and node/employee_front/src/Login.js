@@ -4,7 +4,7 @@ class Login extends Component {
     constructor(props){
         super(props);
 
-        this.state = {login:true}
+        this.state = {login:true, username:"", password:"", name:"", email:""}
 
         this.saveUsername = this.saveUsername.bind(this);
         this.savePassword = this.savePassword.bind(this);
@@ -21,14 +21,14 @@ class Login extends Component {
                     <table className="login-table">
                         <tr>
                             <td>Username:</td>
-                            <td><input type="text" onChange={this.saveUsername} value={this.props.data.username}/></td>
+                            <td><input type="text" onChange={this.saveUsername} value={this.state.username}/></td>
                         </tr>
                         <tr>
                             <td>Password:</td>
-                            <td><input type="password" onChange={this.savePassword} value={this.props.data.password}/></td>
+                            <td><input type="password" onChange={this.savePassword} value={this.state.password}/></td>
                         </tr>
                     </table><br />
-                    <button type="submit">Login</button><button onClick={this.register}>Register</button>
+                    <button type="submit">Login</button><button type="button" onClick={this.register}>Register</button>
                 </form>
             );
         }
@@ -37,19 +37,19 @@ class Login extends Component {
                 <form className="main" onSubmit={this.register}>
                     <tr>
                         <td>Username:</td>
-                        <td><input type="text" onChange={this.saveUsername} value={this.props.data.username}/></td>
+                        <td><input type="text" onChange={this.saveUsername} value={this.state.username}/></td>
                     </tr>
                     <tr>
                         <td>Password:</td>
-                        <td><input type="password" onChange={this.savePassword} value={this.props.data.password}/></td>
+                        <td><input type="password" onChange={this.savePassword} value={this.state.password}/></td>
                     </tr>
                     <tr>
                         <td>Name:</td>
-                        <td><input type="text" onChange={this.saveName} value={this.props.data.name}/></td>
+                        <td><input type="text" onChange={this.saveName} value={this.state.name}/></td>
                     </tr>
                     <tr>
                         <td>Email:</td>
-                        <td><input type="text" onChange={this.saveEmail} value={this.props.data.email}/></td>
+                        <td><input type="text" onChange={this.saveEmail} value={this.state.email}/></td>
                     </tr>
                     <tr>
                         <td><button type="submit">Register</button></td>
@@ -62,32 +62,32 @@ class Login extends Component {
 
     login(event){
         event.preventDefault()
-        this.props.data.login();
+        this.props.login(this.state.username, this.state.password);
     }
 
     register(event){
         if(this.state.login){
             this.setState({login:false});
         }
-        else if((this.username !== "") && (this.email !== "") && (this.password !== "") && (this.name !== "")){
+        else if((this.state.username !== "") && (this.state.email !== "") && (this.state.password !== "") && (this.state.name !== "")){
             event.preventDefault()
-            this.props.data.post();
+            this.props.register(this.state.username, this.state.password, this.state.email, this.state.name);
             this.setState({login:true})
         }
     }
 
     saveUsername(event){
-        this.props.data.saveUsername(event);
+        this.setState({username:event.target.value});
     }
 
     savePassword(event){
-        this.props.data.savePassword(event);
+        this.setState({password:event.target.value});
     }
     saveEmail(event){
-        this.props.data.saveEmail(event);
+        this.setState({email:event.target.value});
     }
     saveName(event){
-        this.props.data.saveName(event);
+        this.setState({name:event.target.value});
     }
 }
 
