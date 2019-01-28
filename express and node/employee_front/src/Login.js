@@ -1,10 +1,14 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
 
+/**
+ * Page to login or register users
+ */
 class Login extends Component {
     constructor(props){
         super(props);
 
-        this.state = {login:true, username:"", password:"", name:"", email:""}
+        this.state = {login:true, username:"", password:"", name:"", email:""};
 
         this.saveUsername = this.saveUsername.bind(this);
         this.savePassword = this.savePassword.bind(this);
@@ -12,6 +16,16 @@ class Login extends Component {
         this.saveName = this.saveName.bind(this);
         this.login = this.login.bind(this);
         this.register = this.register.bind(this);
+    }
+
+    /**
+     * validates prop inputs
+     */
+    static get propTypes() { 
+        return { 
+            login:PropTypes.func,
+            register:PropTypes.func
+        }; 
     }
 
     render () {
@@ -61,7 +75,7 @@ class Login extends Component {
     }
 
     login(event){
-        event.preventDefault()
+        event.preventDefault();
         this.props.login(this.state.username, this.state.password);
     }
 
@@ -70,9 +84,9 @@ class Login extends Component {
             this.setState({login:false});
         }
         else if((this.state.username !== "") && (this.state.email !== "") && (this.state.password !== "") && (this.state.name !== "")){
-            event.preventDefault()
+            event.preventDefault();
             this.props.register(this.state.username, this.state.password, this.state.email, this.state.name);
-            this.setState({login:true})
+            this.setState({login:true});
         }
     }
 
