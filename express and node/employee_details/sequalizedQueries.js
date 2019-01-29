@@ -2,10 +2,9 @@
  * Implements query functionality for postgress DB
  */
 
-require('dotenv').load();
-const Sequelize = require('sequelize');
-var logger = require('./logger');
-var login = require('./login');
+require("dotenv").load();
+const Sequelize = require("sequelize");
+var login = require("./login");
 
 const sequelize = new Sequelize(process.env.connectionString);
 
@@ -14,7 +13,7 @@ const sequelize = new Sequelize(process.env.connectionString);
  * 
  * This needs to be in a local postgress DB named EMP_MASTER (connection string in .env)
  */
-const EmployeeDB = sequelize.define('emp_dtl', {
+const EmployeeDB = sequelize.define("emp_dtl", {
     id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
     name: { type: Sequelize.TEXT },
     email: { type: Sequelize.TEXT },
@@ -23,11 +22,12 @@ const EmployeeDB = sequelize.define('emp_dtl', {
     salt: { type: Sequelize.TEXT }
 }, { timestamps: false, freezeTableName: true, });
 
-EmployeeDB.sync({ force: true });
+//{ force: true }
+EmployeeDB.sync();
 
 module.exports.close = () => {
     sequelize.close();
-}
+};
 
 /**
  * Queries the postgress DB. Name explains purpose for most.
@@ -51,7 +51,7 @@ module.exports.getById = (res, id) => {
             res.status(200).send(employee);
         }
     });
-}
+};
 
 /**
  * Used to check if employee with given id exists
@@ -68,13 +68,13 @@ module.exports.idCheck = (res, id, cb) => {
             cb(true);
         }
     });
-}
+};
 
 module.exports.post = (res, data) => {
-    EmployeeDB.create(data).then(employee => {
+    EmployeeDB.create(data).then(() => {
         res.status(200).send("Post Successful");
     });
-}
+};
 
 module.exports.put = (res, data, id) => {
     EmployeeDB.update(data, { where: { id: id } }).then(employee => {
@@ -85,7 +85,7 @@ module.exports.put = (res, data, id) => {
             res.status(200).send("Put Successful");
         }
     });
-}
+};
 
 module.exports.delete = (res, id) => {
     EmployeeDB.destroy({ where: { id: id } }).then(employee => {
@@ -96,7 +96,7 @@ module.exports.delete = (res, id) => {
             res.status(200).send("Delete Successful");
         }
     });
-}
+};
 
 /**
  * Checks if employee with given username and password exists
@@ -109,7 +109,7 @@ module.exports.login = (res, username, password) => {
         if (employee === null) {
             res.status(400).send("employee with given username does not exist");
         } else {
-            let pass = login.sha512(password, employee.salt)
+            let pass = login.sha512(password, employee.salt);
 
             if(pass === employee.password){
                 res.status(200).send(employee);
@@ -119,7 +119,7 @@ module.exports.login = (res, username, password) => {
             }
         }
     });
-}
+};
 
 /**
  * Checks if username is in use
@@ -134,7 +134,7 @@ module.exports.usernameCheck = (username, cb) => {
             cb(true);
         }
     });
-}
+};
 
 /**
  * Checks if username is in use, with exception for the given id
@@ -155,4 +155,4 @@ module.exports.usernameCheckWithExp = (username, id, cb) => {
             cb(true);
         }
     });
-}
+};

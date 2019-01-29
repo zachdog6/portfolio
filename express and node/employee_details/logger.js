@@ -1,10 +1,10 @@
 "use strict";
 
-var winston = require('winston');
+var winston = require("winston");
 
 const myFormat = winston.format.printf(info => {
     return `${info.timestamp} ${info.level}: ${info.message}`;
-  });
+});
 
 const logger = winston.createLogger({
     format: winston.format.combine(
@@ -12,7 +12,7 @@ const logger = winston.createLogger({
         myFormat
     ),
     transports: [
-        new winston.transports.File({ filename: 'app.log' })
+        new winston.transports.File({ filename: "app.log" })
     ]
 });
 

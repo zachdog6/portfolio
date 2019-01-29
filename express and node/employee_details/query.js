@@ -5,10 +5,9 @@
  * new, updated queries in sequalized queries
  */
 
-require('dotenv').load();
-var pg = require('pg');
-var logger = require('./logger');
-var login = require('./login');
+require("dotenv").load();
+var pg = require("pg");
+var login = require("./login");
 
 var pool = new pg.Pool({
     connectionString: process.env.connectionString
@@ -17,7 +16,7 @@ var pool = new pg.Pool({
 function query(sql, values, cb) {
     pool.connect((err, client, done) => {
         if (err) {
-            throw err
+            throw err;
         }
         client.query(sql, values, (err, result) => {
             done();
@@ -34,7 +33,7 @@ module.exports.getAll = (res) => {
             res.status(200).send(result.rows);
         }
     });
-}
+};
 
 module.exports.getById = (res, id) => {
     query("SELECT * FROM EMP_DTL WHERE id=$1", [id], (err, result) => {
@@ -47,7 +46,7 @@ module.exports.getById = (res, id) => {
             res.status(200).send(result.rows[0]);
         }
     });
-}
+};
 
 module.exports.idCheck = (res, id, cb) => {
     query("SELECT * FROM EMP_DTL WHERE id=$1", [id], (err, result) => {
@@ -60,17 +59,17 @@ module.exports.idCheck = (res, id, cb) => {
             cb(true);
         }
     });
-}
+};
 
 module.exports.post = (res, data) => {
-    query("INSERT INTO EMP_DTL (name, email, username, password, salt) VALUES ($1, $2, $3, $4, $5)", data, (err, result) => {
+    query("INSERT INTO EMP_DTL (name, email, username, password, salt) VALUES ($1, $2, $3, $4, $5)", data, (err) => {
         if (err) {
             res.status(400).send(err);
         } else {
             res.status(200).send("Post Successful");
         }
     });
-}
+};
 
 module.exports.put = (res, data, id) => {
     query("UPDATE EMP_DTL SET name=$1, email=$2, username=$3, password=$4, salt=$5 WHERE id=$6", data, (err, result) => {
@@ -85,7 +84,7 @@ module.exports.put = (res, data, id) => {
             }
         }
     });
-}
+};
 
 module.exports.delete = (res, id) => {
     query("DELETE FROM EMP_DTL WHERE id=$1", [id], (err, result) => {
@@ -100,7 +99,7 @@ module.exports.delete = (res, id) => {
             }
         }
     });
-}
+};
 
 module.exports.login = (res, username, password) => {
     query("SELECT * FROM EMP_DTL WHERE username=$1", [username], (err, result) => {
@@ -110,7 +109,7 @@ module.exports.login = (res, username, password) => {
         else if (result.rows.length === 0) {
             res.status(400).send("employee with given username does not exist");
         } else {
-            let pass = login.sha512(password, result.rows[0].salt)
+            let pass = login.sha512(password, result.rows[0].salt);
 
             if(pass === result.rows[0].password){
                 res.status(200).send("login successful");
@@ -120,7 +119,7 @@ module.exports.login = (res, username, password) => {
             }
         }
     });
-}
+};
 
 module.exports.usernameCheck = (username, cb) => {
     query("SELECT * FROM EMP_DTL WHERE username=$1", [username], (err, result) => {
@@ -133,7 +132,7 @@ module.exports.usernameCheck = (username, cb) => {
             cb(true);
         }
     });
-}
+};
 
 module.exports.usernameCheckWithExp = (username, id, cb) => {
     query("SELECT * FROM EMP_DTL WHERE username=$1", [username], (err, result) => {
@@ -150,4 +149,4 @@ module.exports.usernameCheckWithExp = (username, id, cb) => {
             cb(true);
         }
     });
-}
+};
