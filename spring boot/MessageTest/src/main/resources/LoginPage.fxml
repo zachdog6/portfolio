@@ -15,9 +15,8 @@
       </Text>
       <TextField fx:id="username" layoutX="136.0" layoutY="116.0" text="Username" onAction="#login" />
       <TextField fx:id="password" layoutX="136.0" layoutY="161.0" text="Password" onAction="#login" />
-      <TextField fx:id="url" layoutX="137.0" layoutY="204.0" text="http://my_ip_address:8080" onAction="#login" />
-      <Button layoutX="265.0" layoutY="241.0" mnemonicParsing="false" onAction="#login" text="Login" />
-      <Button layoutX="184.0" layoutY="241.0" mnemonicParsing="false" text="Register" onAction="#register" fx:id="register" />
-      <Text fx:id="err" fill="RED" layoutX="14.0" layoutY="302.0" strokeType="OUTSIDE" strokeWidth="0.0" />
+      <Button layoutX="265.0" layoutY="204.0" mnemonicParsing="false" onAction="#login" text="Login" />
+      <Button layoutX="184.0" layoutY="204.0" mnemonicParsing="false" text="Register" onAction="#register" fx:id="register" />
+      <Text fx:id="err" fill="RED" layoutX="14.0" layoutY="250.0" strokeType="OUTSIDE" strokeWidth="0.0" />
    </children>
 </Pane>

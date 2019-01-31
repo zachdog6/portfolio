@@ -188,7 +188,12 @@ public class ChatController {
 	public void send() {
 		
 		if(textArea.getText().contains(":") || textArea.getText().contains(";")) {
-			textArea.setText(": and ; are invalid chatacters");
+			textArea.setText(": and ; are invalid chatacters!");
+			return;
+		}
+		
+		if(textArea.getText().equals("")) {
+			textArea.setText("Cannot send Nothing!");
 			return;
 		}
 		

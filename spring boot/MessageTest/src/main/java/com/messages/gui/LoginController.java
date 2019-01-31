@@ -5,7 +5,9 @@ import java.net.URL;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -24,6 +26,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 
 /**
  * Controller for LoginPage.fxml
@@ -40,13 +44,13 @@ public class LoginController {
 	ApplicationContext context;
 	@Autowired
 	ChatController chat;
+	@Autowired
+	Environment environment;
 	
 	@FXML
 	private TextField username;
 	@FXML
 	private TextField password;
-	@FXML
-	private TextField url;
 	@FXML
 	private Text err;
 	@FXML
@@ -85,35 +89,20 @@ public class LoginController {
 			
 			if(user.getPassword().equals(password.getText())) {
 				
-				//if exception, then user gave bad url
-				if(!url.getText().equals("")) {
-					try {
-						RestTemplate restTemplate = new RestTemplate();
-						restTemplate.getForObject(url.getText() + "/test", String.class);
-						
-						user.setLocation(url.getText());
-						dao.save(user);
-					}
-					catch(Exception e) {
-						err.setText("Bad Url\nPlease enter your locaion in the form of http://my_ip_address:8080");
-						return;
-					}
+				try(final DatagramSocket socket = new DatagramSocket()){
+					socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+					String ip = socket.getLocalAddress().getHostAddress();
+					String url = "http://" + ip + ":" + environment.getProperty("local.server.port");
+					
+					RestTemplate restTemplate = new RestTemplate();
+					restTemplate.getForObject(url + "/test", String.class);
+					
+					user.setLocation(url);
+					dao.save(user);
 				}
-				else {
-					if(user.getLocation().equals("")) {
-						err.setText("No Url Saved\nPlease enter your locaion in the form of http://my_ip_address:8080");
-						return;
-					}
-					else {
-						try {
-							RestTemplate restTemplate = new RestTemplate();
-							restTemplate.getForObject(user.getLocation() + "/test", String.class);
-						}
-						catch(Exception e) {
-							err.setText("Bad Saved Url\nPlease enter your locaion in the form of http://ipAddress:8080");
-							return;
-						}
-					}
+				catch(Exception e) {
+					err.setText("Error getting external IP address");
+					return;
 				}
 				
 				URL loginPage = (new ClassPathResource("chat.fxml")).getURL();
