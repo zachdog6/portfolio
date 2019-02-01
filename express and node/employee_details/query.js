@@ -9,8 +9,9 @@ require("dotenv").load();
 var pg = require("pg");
 var login = require("./login");
 
+//would supply through .env, but doesn't play nice with pkg
 var pool = new pg.Pool({
-    connectionString: process.env.connectionString
+    connectionString: "postgres://rgcgvgol:ecx6vsGO1VgrFE4qHNdmQtEat7-FieHN@pellefant.db.elephantsql.com:5432/rgcgvgol"
 });
 
 function query(sql, values, cb) {

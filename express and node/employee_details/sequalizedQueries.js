@@ -6,7 +6,8 @@ require("dotenv").load();
 const Sequelize = require("sequelize");
 var login = require("./login");
 
-const sequelize = new Sequelize(process.env.connectionString);
+//would supply through .env, but doesn't play nice with pkg
+const sequelize = new Sequelize("postgres://rgcgvgol:ecx6vsGO1VgrFE4qHNdmQtEat7-FieHN@pellefant.db.elephantsql.com:5432/rgcgvgol");
 
 /**
  * Employee model
