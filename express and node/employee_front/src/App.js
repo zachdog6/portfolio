@@ -1,9 +1,19 @@
 import React, {Component} from "react";
-import "./App.css";
-import Login from "./Login";
+import Login from "./pages/login/Login";
 import axios from "axios";
-import Header from "./Header";
-import List from "./List";
+import List from "./pages/list/List";
+import Home from "./pages/home/Home";
+import Register from "./pages/register/Register";
+import Header from "./components/header/Header";
+import ProtectedRoute from "./ProtectedRoute";
+import Put from "./pages/put/Put";
+import Post from "./pages/post/Post";
+import { Route, Switch, withRouter } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import PropTypes from "prop-types";
+
+import "react-toastify/dist/ReactToastify.css";
+import "./App.css";
 
 /**
  * Frontend for employee_details node server
@@ -14,52 +24,36 @@ class App extends Component {
     constructor(props) {
         super(props);
 
-        let key = "List" + Math.floor(Math.random() * 100);
-        this.state = { user: { id: "", name: "", email: "", username: "", password: "" }, inLogin: true, list:false, listKey:key};
+        this.state = { user: { id: "", name: "", email: "", username: "", password: "" }, inLogin: true};
     
         this.login = this.login.bind(this);
         this.logout = this.logout.bind(this);
         this.register = this.register.bind(this);
-        this.displayList = this.displayList.bind(this);
         this.resetUser = this.resetUser.bind(this);
-        this.home = this.home.bind(this);
+    }
+
+    static get propTypes(){
+        return({
+            history:PropTypes.any
+        });
     }
 
     render() {
-        if (this.state.inLogin){
-            return (
-                <div>
-                    <Header login={true}/>
-                    <Login login={this.login} register={this.register}/>
-                    {this.state.message}
-                </div>
-            );
-        }
-        else if(this.state.list){
-            return(
-                <div key={this.state.listKey}>
-                    <Header home={this.home} login={false} logout={this.logout} list={this.displayList}/>
-                    <List userId={this.state.user.id} resetUser={this.resetUser}/>
-                </div>
-            );
-        }
-        else {
-            return (
-                <div>
-                    <Header home={this.home} login={false} logout={this.logout} list={this.displayList}/>
-                    <div className="main">
-                        <h2>Hello {this.state.user.name}!</h2>
-                    </div>
-                </div>
-            );
-        }
-    }
-
-    /**
-     * goes back to hello screen
-     */
-    home(){
-        this.setState({inLogin: false, list:false});
+        return(
+            <div>
+                <Header login={this.state.inLogin} logout={this.logout}/>
+                <Switch>
+                    <Route path="/register" component={() => <Register register={this.register} />} />
+                    <Route path="/login" render={() => <Login login={this.login}/>} />
+                    <ProtectedRoute path="/list" inLogin={this.state.inLogin} component={() => <List userId={this.state.user.id} resetUser={this.resetUser}/>}/>
+                    <ProtectedRoute path="/home" inLogin={this.state.inLogin} component={() => <Home name={this.state.user.name} />} />
+                    <ProtectedRoute path="/put" inLogin={this.state.inLogin} component={() => <Put resetUser={this.resetUser} userId={this.state.user.id} />} />
+                    <ProtectedRoute path="/post" inLogin={this.state.inLogin} component={() => <Post />} />
+                    <ProtectedRoute path="/*" inLogin={this.state.inLogin} component={() => <Home name={this.state.user.name} />} />
+                </Switch>
+                <ToastContainer />
+            </div>
+        );
     }
 
     /**
@@ -68,22 +62,16 @@ class App extends Component {
     resetUser(){
         axios.get("http://localhost:8080/api/employee/" + this.state.user.id).then(response => {
             this.setState({user: { id: response.data.id, name: response.data.name, email: response.data.email, username: response.data.username, password: response.data.password}});
-        }).catch(err => { this.setState({ message: <p className="error">{err.response.data}</p> }); });
-    }
-
-    /**
-     * goes to list page
-     */
-    displayList(){
-        let key = "List" + Math.floor(Math.random() * 100);
-        this.setState({list:true, listKey:key});
+        }).catch(err => this.handleError(err));
     }
 
     /**
      * Goes back to login component. Resets saved user details.
      */
     logout(){
-        this.setState({ user: { id: "", name: "", email: "", username: "", password: "" }, inLogin: true, list:false});
+        this.setState({ user: { id: "", name: "", email: "", username: "", password: "" }, inLogin: true, message:""});
+        toast.success("Logout Sucessfull");
+        this.props.history.push("/login");
     }
 
     /**
@@ -106,8 +94,9 @@ class App extends Component {
         };
 
         axios.post("http://localhost:8080/api/employee", data).then(response => {
-            this.setState({ message: <p className="result">{response.data}</p>});
-        }).catch(err => { this.setState({ message: <p className="error">{err.response.data}</p>});});
+            toast.success(response.data);
+            this.props.history.push("/login");
+        }).catch(err => this.handleError(err));
     }
 
     /**
@@ -125,11 +114,27 @@ class App extends Component {
         };
 
         axios.post("http://localhost:8080/api/employee/login", data).then(response => {
+            toast.success("login successful");
             this.setState({
                 inLogin: false, user: { id: response.data.id, name: response.data.name, email: response.data.email, username: response.data.username, password: this.state.password }
             });
-        }).catch(err => { this.setState({ message: <p className="error">{err.response.data}</p> }); });
+            this.props.history.push("/home");
+        }).catch(err => this.handleError(err));
+    }
+
+    /**
+     * print error to toast container
+     * @param {*} err error to print
+     */
+    handleError(err){
+        if (err.response) {
+            toast.error(err.response.data);
+        } else if (err.request) {
+            toast.error(err.request);
+        } else {
+            toast.error(err.message);
+        }
     }
 }
 
-export default App;
+export default withRouter(App);
