@@ -32,25 +32,16 @@ public class CardFragment extends Fragment {
         title.setText(args.getString("name"));
 
         TextView desc = cardLayout.findViewById(R.id.weather_desc);
-        desc.setText(args.getString("detailedForecast"));
+        desc.setText(args.getString("shortForecast"));
+
+        TextView temp = cardLayout.findViewById(R.id.temp);
+        temp.setText(args.getString("temperature"));
+
+        TextView wind = cardLayout.findViewById(R.id.wind_speed);
+        wind.setText("Wind Speed: " + args.getString("windSpeed"));
 
         ImageView icon = cardLayout.findViewById(R.id.weather_icon);
         new DownloadImageTask(icon).execute(args.getString("icon"));
-
-        int position = args.getInt("position");
-        TextView left = cardLayout.findViewById(R.id.left_arrow);
-        TextView right = cardLayout.findViewById(R.id.right_arrow);
-        if(position > 0){
-            left.setVisibility(View.VISIBLE);
-            if(position < args.getInt("max")-1)
-                right.setVisibility(View.VISIBLE);
-            else
-                right.setVisibility(View.INVISIBLE);
-        }
-        else{
-            left.setVisibility(View.INVISIBLE);
-            right.setVisibility(View.VISIBLE);
-        }
 
         return  cardLayout;
     }

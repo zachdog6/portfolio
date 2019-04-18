@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 
 import org.json.JSONArray;
@@ -13,10 +14,12 @@ import org.json.JSONObject;
 public class CardPagerAdapter extends FragmentStatePagerAdapter {
 
     JSONArray periods;
+    LinearLayout main;
 
-    public CardPagerAdapter(FragmentManager fm, JSONArray periods){
+    public CardPagerAdapter(FragmentManager fm, JSONArray periods, LinearLayout main){
         super(fm);
         this.periods = periods;
+        this.main = main;
     }
 
     @Override
@@ -26,7 +29,9 @@ public class CardPagerAdapter extends FragmentStatePagerAdapter {
             JSONObject period = periods.getJSONObject(position);
             Bundle args = new Bundle();
             args.putString("name", period.getString("name"));
-            args.putString("detailedForecast", period.getString("detailedForecast"));
+            args.putString("shortForecast", period.getString("shortForecast"));
+            args.putString("windSpeed", period.getString("windSpeed"));
+            args.putString("temperature", period.getInt("temperature") + " \u00b0F");
             args.putString("icon", period.getString("icon"));
             args.putInt("position", position);
             args.putInt("max", periods.length());
@@ -39,7 +44,7 @@ public class CardPagerAdapter extends FragmentStatePagerAdapter {
             Log.e("Error", err.getMessage());
             Bundle args = new Bundle();
             args.putString("name", "");
-            args.putString("detailedForecast", err.getMessage());
+            args.putString("shortForecast", err.getMessage());
             args.putString("icon", "");
 
             CardFragment card = new CardFragment();

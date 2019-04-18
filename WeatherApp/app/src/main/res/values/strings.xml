@@ -2,6 +2,7 @@
     <string name="app_name">WeatherApp</string>
     <string name="weather_details">Loading...</string>
     <string name="icon_description">Image of current weather</string>
-    <string name="left_arrow"> &lt; </string>
-    <string name="right_arrow"> &gt; </string>
+    <string name="left_arrow">&lt;</string>
+    <string name="right_arrow">&gt;</string>
+    <string name="chart_title">Weekly Temps</string>
 </resources>

@@ -110,9 +110,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getWeatherData(String queryString){
-        String url = "https://api.weather.gov/points/" + queryString + "/forecast";
+        String url = "https://api.weather.gov/points/" + queryString;
 
-        RequestQueue queue = Volley.newRequestQueue(this);
+        final RequestQueue queue = Volley.newRequestQueue(this);
 
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
                 url, null,
@@ -121,13 +121,38 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            JSONArray periods = response.getJSONObject("properties").getJSONArray("periods");
 
-                            ViewPager mPager = findViewById(R.id.pager);
-                            CardPagerAdapter pagerAdapter = new CardPagerAdapter(getSupportFragmentManager(), periods);
-                            mPager.setAdapter(pagerAdapter);
+                            String forecastUrl = response.getJSONObject("properties").getString("forecast");
 
-                            drawGraph(periods);
+                            JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
+                                    forecastUrl, null,
+                                    new Response.Listener<JSONObject>() {
+                                        @Override
+                                        public void onResponse(JSONObject response) {
+                                            try {
+                                                JSONArray periods = response.getJSONObject("properties").getJSONArray("periods");
+
+                                                ViewPager mPager = findViewById(R.id.pager);
+                                                LinearLayout main = findViewById(R.id.main_layout);
+                                                CardPagerAdapter pagerAdapter = new CardPagerAdapter(getSupportFragmentManager(), periods, main);
+                                                mPager.setAdapter(pagerAdapter);
+
+                                                drawGraph(periods);
+                                            }
+                                            catch (org.json.JSONException err){
+                                                Log.e("Error", err.getMessage());
+                                            }
+                                        }
+                                    },
+                                    new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+
+                                            Log.e("Error", error.getMessage());
+                                        }
+                                    });
+
+                            queue.add(jsonObjReq);
                         }
                         catch (org.json.JSONException err){
                             Log.e("Error", err.getMessage());
