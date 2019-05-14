@@ -135,7 +135,9 @@ public class MainActivity extends AppCompatActivity {
                                                 ViewPager mPager = findViewById(R.id.pager);
                                                 LinearLayout main = findViewById(R.id.main_layout);
                                                 CardPagerAdapter pagerAdapter = new CardPagerAdapter(getSupportFragmentManager(), periods, main);
+
                                                 mPager.setAdapter(pagerAdapter);
+                                                mPager.addOnPageChangeListener(pagerAdapter);
 
                                                 drawGraph(periods);
                                             }
@@ -169,6 +171,8 @@ public class MainActivity extends AppCompatActivity {
 
         queue.add(jsonObjReq);
     }
+
+
 
     public void drawGraph( JSONArray periods){
         try {
