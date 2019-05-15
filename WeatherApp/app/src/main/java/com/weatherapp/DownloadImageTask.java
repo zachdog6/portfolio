@@ -15,6 +15,12 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         this.cardImage = cardImage;
     }
 
+    /**
+     * downloads weather image from url
+     *
+     * @param urls image url
+     * @return downloaded image bitmap
+     */
     protected Bitmap doInBackground(String... urls) {
         String url = urls[0];
         Bitmap image = null;
@@ -28,6 +34,11 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         return image;
     }
 
+    /**
+     * sets image to given ImageView
+     *
+     * @param image downloaded image
+     */
     protected void onPostExecute(Bitmap image) {
         cardImage.setImageBitmap(image);
     }

@@ -28,6 +28,12 @@ public class CardPagerAdapter extends FragmentStatePagerAdapter implements ViewP
         onPageSelected(0);
     }
 
+    /**
+     * creates new card, passing day as "name" and image url "icon"
+     *
+     * @param position
+     * @return New card to add to pager
+     */
     @Override
     public Fragment getItem(int position) {
 
@@ -61,6 +67,11 @@ public class CardPagerAdapter extends FragmentStatePagerAdapter implements ViewP
     @Override
     public void onPageScrolled(int i, float v, int i1) {}
 
+    /**
+     * Changes the weather info shown to the currently selected fragment
+     *
+     * @param position
+     */
     @Override
     public void onPageSelected(int position) {
         try {

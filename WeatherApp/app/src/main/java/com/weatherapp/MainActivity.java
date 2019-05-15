@@ -47,6 +47,10 @@ public class MainActivity extends AppCompatActivity {
     static final int GPS_REQUEST_CODE = 1;
     static final int INTERNET_REQUEST_CODE = 2;
 
+    /**
+     * listens for update to current location, when it updates weather with new
+     * longitude and latitude
+     */
     private final LocationListener locationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
             Double longitude = location.getLongitude();
@@ -80,6 +84,9 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    /**
+     * gets permissions, gets last location, and calls getWeatherData
+     */
     private void updateWeather(){
 
         //request permissions
@@ -109,6 +116,12 @@ public class MainActivity extends AppCompatActivity {
                 3600000, 0, locationListener);
     }
 
+    /**
+     * calls weather.gov for weather info using queryString as location and uses
+     * to create new CardPagerAdapter for pager. Also calls drawGraph with results.
+     *
+     * @param queryString location in form of "longitude,latitude"
+     */
     private void getWeatherData(String queryString){
         String url = "https://api.weather.gov/points/" + queryString;
 
@@ -180,7 +193,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
+    /**
+     * draws weekly graph of temperatures
+     *
+     * @param periods weather info for the week
+     */
     public void drawGraph( JSONArray periods){
         try {
             DataPoint[] temps = new DataPoint[periods.length()];

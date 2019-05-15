@@ -21,6 +21,9 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 
+/**
+ * used for pager to create list of weekly weather cards
+ */
 public class CardFragment extends Fragment {
 
     @Override
