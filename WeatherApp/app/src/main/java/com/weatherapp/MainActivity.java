@@ -124,6 +124,13 @@ public class MainActivity extends AppCompatActivity {
 
                             String forecastUrl = response.getJSONObject("properties").getString("forecast");
 
+                            JSONObject location = response.getJSONObject("properties")
+                                                            .getJSONObject("relativeLocation")
+                                                            .getJSONObject("properties");
+
+                            TextView locationTextBox = findViewById(R.id.location);
+                            locationTextBox.setText(location.getString("city") + ", " + location.getString("state"));
+
                             JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
                                     forecastUrl, null,
                                     new Response.Listener<JSONObject>() {
