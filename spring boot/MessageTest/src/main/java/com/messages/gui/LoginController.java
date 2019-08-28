@@ -4,15 +4,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 
+import com.messages.service.LoginService;
+import javafx.scene.control.PasswordField;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-
-import com.messages.dao.UserDao;
 import com.messages.model.User;
 
 import javafx.fxml.FXML;
@@ -26,8 +23,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 
 /**
  * Controller for LoginPage.fxml
@@ -37,29 +32,23 @@ import java.net.InetAddress;
  */
 @Component
 public class LoginController {
-	
+
 	@Autowired
-	UserDao dao;
+	private ApplicationContext context;
 	@Autowired
-	ApplicationContext context;
+	private LoginService loginService;
 	@Autowired
-	ChatController chat;
-	@Autowired
-	Environment environment;
+	private ChatController chat;
 	
 	@FXML
 	private TextField username;
 	@FXML
-	private TextField password;
+	private PasswordField password;
 	@FXML
 	private Text err;
 	@FXML
 	private Button register;
-	
-	/**
-	 * opens register page
-	 * @throws IOException
-	 */
+
 	@FXML
 	public void register() throws IOException {
 		URL registerPage = (new ClassPathResource("register.fxml")).getURL();
@@ -75,64 +64,37 @@ public class LoginController {
 		stage.setTitle("Register Page");
 	}
 
-	/**
-	 * validates login. If okay, redirects to chat page. If not, prints error on screen
-	 * 
-	 * @throws IOException
-	 */
 	@FXML
 	public void login() throws IOException {
-		
-		Optional<User> userSearch = dao.findById(username.getText());
-		if(userSearch.isPresent()) {
-			User user = userSearch.get();
-			
-			if(user.getPassword().equals(password.getText())) {
-				
-				try(final DatagramSocket socket = new DatagramSocket()){
-					socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
-					String ip = socket.getLocalAddress().getHostAddress();
-					String url = "http://" + ip + ":" + environment.getProperty("local.server.port");
-					
-					RestTemplate restTemplate = new RestTemplate();
-					restTemplate.getForObject(url + "/test", String.class);
-					
-					user.setLocation(url);
-					dao.save(user);
-				}
-				catch(Exception e) {
-					err.setText("Error getting external IP address");
-					return;
-				}
-				
-				URL loginPage = (new ClassPathResource("chat.fxml")).getURL();
-				FXMLLoader loader = new FXMLLoader(loginPage);
-				loader.setControllerFactory(context::getBean);
-				Parent root = loader.load();
-				
-				Pane pane = (Pane) root;
-				for(Node node:pane.getChildren()) {
-					if(node instanceof HBox) {
-						Text text = (Text) ((HBox)node).getChildren().get(0);
-						text.setText("Welcome " + user.getName() + "!");
-					}
-				}
-				
-				Scene scene = new Scene(root);
-				
-				Stage stage = (Stage) username.getScene().getWindow();
-				
-				stage.setScene(scene);
-				stage.setTitle("Chat Window");
-				
-				chat.setUsername(username.getText());
-			}
-			else {
-				err.setText("Wrong password");
-				return;
+
+		Optional<User> userSearch = loginService.login(username.getText(), password.getText(), err);
+
+		if(!userSearch.isPresent()) {
+			return;
+		}
+
+		User user = userSearch.get();
+
+		URL loginPage = (new ClassPathResource("chat.fxml")).getURL();
+		FXMLLoader loader = new FXMLLoader(loginPage);
+		loader.setControllerFactory(context::getBean);
+		Parent root = loader.load();
+
+		Pane pane = (Pane) root;
+		for(Node node:pane.getChildren()) {
+			if(node instanceof HBox) {
+				Text text = (Text) ((HBox)node).getChildren().get(0);
+				text.setText("Welcome " + user.getName() + "!");
 			}
 		}
-		
-		err.setText("Invalid username");
+
+		Scene scene = new Scene(root);
+
+		Stage stage = (Stage) username.getScene().getWindow();
+
+		stage.setScene(scene);
+		stage.setTitle("Chat Window");
+
+		chat.setUsername(username.getText());
 	}
 }

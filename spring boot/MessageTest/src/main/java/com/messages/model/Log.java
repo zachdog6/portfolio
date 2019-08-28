@@ -18,10 +18,10 @@ public class Log {
 	int id;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="username")
-	User username;
+	User currentUser;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="other_user")
-	User otherUser;
+	ExternalUser otherUser;
 	String log;
 	
 	public int getId() {
@@ -30,16 +30,16 @@ public class Log {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public User getUsername() {
-		return username;
+	public User getCurrentUser() {
+		return currentUser;
 	}
-	public void setUsername(User username) {
-		this.username = username;
+	public void setCurrentUser(User currentUser) {
+		this.currentUser = currentUser;
 	}
-	public User getOtherUser() {
+	public ExternalUser getOtherUser() {
 		return otherUser;
 	}
-	public void setOtherUser(User otherUser) {
+	public void setOtherUser(ExternalUser otherUser) {
 		this.otherUser = otherUser;
 	}
 	public String getLog() {

@@ -16,14 +16,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-/**
- * Starts application, loads login page.
- * 
- * @author Zachary Karamanlis
- *
- */
 @SpringBootApplication
-@ComponentScan({ "com.messages.gui", "com.messages.main" })
+@ComponentScan({ "com.messages.gui", "com.messages.main", "com.messages.service" })
 @EntityScan("com.messages.model")
 @EnableJpaRepositories("com.messages.dao")
 public class MessageTestApplication extends Application {

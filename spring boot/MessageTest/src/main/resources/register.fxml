@@ -6,8 +6,9 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="321.0" prefWidth="459.0" style="-fx-background-color: #fff9d0;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" 
-fx:controller="com.messages.gui.RegisterController">
+<?import javafx.scene.control.PasswordField?>
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="321.0" prefWidth="459.0" style="-fx-background-color: #fff9d0;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.messages.gui.RegisterController">
    <children>
       <Text layoutX="157.0" layoutY="87.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Register Page" underline="true">
          <font>
@@ -15,7 +16,7 @@ fx:controller="com.messages.gui.RegisterController">
          </font>
       </Text>
       <TextField fx:id="username" layoutX="136.0" layoutY="116.0" text="Username" onAction="#register" />
-      <TextField fx:id="password" layoutX="136.0" layoutY="161.0" text="Password" onAction="#register" />
+      <PasswordField fx:id="password" layoutX="136.0" layoutY="161.0" text="Password" onAction="#register" />
       <TextField layoutX="137.0" layoutY="204.0" text="Name" fx:id="name" onAction="#register" />
       <Button layoutX="249.0" layoutY="243.0" mnemonicParsing="false" onAction="#register" text="Register" />
       <Button layoutX="190" layoutY="243.0" mnemonicParsing="false" onAction="#back" text="Back" />

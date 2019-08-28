@@ -3,6 +3,8 @@ package com.messages.gui;
 import java.io.IOException;
 import java.net.URL;
 
+import com.messages.service.RegisterService;
+import javafx.scene.control.PasswordField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
@@ -27,16 +29,16 @@ import javafx.stage.Stage;
  */
 @Component
 public class RegisterController {
-	
+
 	@Autowired
-	private UserDao dao;
+	private RegisterService registerService;
 	@Autowired
 	private ApplicationContext context;
 	
 	@FXML
 	private TextField username;
 	@FXML
-	private TextField password;
+	private PasswordField password;
 	@FXML
 	private TextField name;
 	@FXML
@@ -49,7 +51,7 @@ public class RegisterController {
 	 */
 	@FXML
 	public void register() throws IOException {
-		if(!dao.findById(username.getText()).isPresent()) {
+		if(!registerService.userExists(username.getText())) {
 			
 			User user = new User();
 			user.setLocation("");
@@ -57,7 +59,7 @@ public class RegisterController {
 			user.setPassword(password.getText());
 			user.setUsername(username.getText());
 			
-			dao.save(user);
+			registerService.saveUser(user);
 			
 			URL loginPage = (new ClassPathResource("LoginPage.fxml")).getURL();
 			FXMLLoader loader = new FXMLLoader(loginPage);
