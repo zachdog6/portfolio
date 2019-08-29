@@ -6,10 +6,7 @@ import javafx.scene.text.Text;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
-import javafx.scene.control.TextField;
-import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Optional;
@@ -18,11 +15,11 @@ import java.util.Optional;
 public class LoginService {
 
     @Autowired
-    UserDao dao;
+    private UserDao dao;
     @Autowired
-    Environment environment;
+    private Environment environment;
 
-    public Optional<User> login(String username, String password, Text err) throws IOException {
+    public Optional<User> login(String username, String password, Text err) {
         Optional<User> userSearch = dao.findById(username);
         if(userSearch.isPresent()) {
             User user = userSearch.get();

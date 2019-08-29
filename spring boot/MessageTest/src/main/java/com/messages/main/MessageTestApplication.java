@@ -2,6 +2,7 @@ package com.messages.main;
 
 import java.net.URL;
 
+import com.messages.util.WebPages;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -31,7 +32,7 @@ public class MessageTestApplication extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		URL loginPage = (new ClassPathResource("LoginPage.fxml")).getURL();
+		URL loginPage = (new ClassPathResource(WebPages.LOGIN_PAGE)).getURL();
 		FXMLLoader loader = new FXMLLoader(loginPage);
 		loader.setControllerFactory(context::getBean);
 		Parent root = loader.load();

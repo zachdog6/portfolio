@@ -6,28 +6,20 @@ import com.messages.dao.UserDao;
 import com.messages.model.ExternalUser;
 import com.messages.model.Log;
 import com.messages.model.User;
-import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Optional;
 
 @Service
@@ -40,66 +32,70 @@ public class ChatService {
     private ExternalUserDao externalUserDao;
 
 
-    public void deleteLogs(String currentUser, String otherUser) {
-        User me = dao.findById(currentUser).get();
-        ExternalUser other = externalUserDao.findById(otherUser).get();
+    public void deleteLogs(User currentUser, String otherUser) {
+        Optional<ExternalUser> other = externalUserDao.findById(otherUser);
 
-        Optional<Log> logs = logDao.findByCurrentUserAndOtherUser(me, other);
+        if(other.isPresent()) {
+            Optional<Log> logs = logDao.findByCurrentUserAndOtherUser(currentUser, other.get());
 
-        logs.ifPresent(log -> logDao.delete(log));
-    }
-
-    public void saveLog(String currentUser, String otherUser, String log) {
-        User me = dao.findById(currentUser).get();
-        ExternalUser other = externalUserDao.findById(otherUser).get();
-
-        Optional<Log> logs = logDao.findByCurrentUserAndOtherUser(me, other);
-
-        if (logs.isPresent()) {
-            Log logObj = logs.get();
-            logObj.setLog(log);
-
-            logDao.save(logObj);
-        } else {
-            Log logObj = new Log();
-            logObj.setLog(log);
-            logObj.setOtherUser(other);
-            logObj.setCurrentUser(me);
-
-            logDao.save(logObj);
+            logs.ifPresent(log -> logDao.delete(log));
         }
     }
 
-    public boolean addNewExternalUser(String username, String url, Tab tab) {
-        ExternalUser externalUser;
-        if (externalUserDao.existsById(username)) {
-            addLogs(tab, username, username);
-            externalUser = externalUserDao.findById(username).get();
-            externalUser.setLocation(url);
+    public void saveLog(User currentUser, String otherUser, String log) {
+        Optional<ExternalUser> other = externalUserDao.findById(otherUser);
+
+        if(other.isPresent()) {
+            Optional<Log> logs = logDao.findByCurrentUserAndOtherUser(currentUser, other.get());
+
+            if (logs.isPresent()) {
+                Log logObj = logs.get();
+                logObj.setLog(log);
+
+                logDao.save(logObj);
+            } else {
+                Log logObj = new Log();
+                logObj.setLog(log);
+                logObj.setOtherUser(other.get());
+                logObj.setCurrentUser(currentUser);
+
+                logDao.save(logObj);
+            }
+        }
+    }
+
+    public boolean addNewExternalUser(String username, User currentUser, String url, Tab tab) {
+        Optional<ExternalUser> oldExternalUser = externalUserDao.findById(username);
+        ExternalUser newExternalUser;
+        if (oldExternalUser.isPresent()) {
+            newExternalUser = oldExternalUser.get();
+            addLogs(tab, currentUser, username);
+            newExternalUser.setLocation(url);
         }
         else {
-            externalUser = new ExternalUser();
-            externalUser.setLocation(url);
-            externalUser.setUsername(username);
+            newExternalUser = new ExternalUser();
+            newExternalUser.setLocation(url);
+            newExternalUser.setUsername(username);
         }
 
         if(isGoodConnection(url)){
-            externalUserDao.save(externalUser);
+            externalUserDao.save(newExternalUser);
             return true;
         }
         return false;
     }
 
-    public void addLogs(Tab tab, String username, String otherUserUsername) {
-        User me = dao.findById(username).get();
-        ExternalUser otherUser = externalUserDao.findById(otherUserUsername).get();
-        Optional<Log> log = logDao.findByCurrentUserAndOtherUser(me, otherUser);
+    public void addLogs(Tab tab, User currentUser, String otherUserUsername) {
+        Optional<ExternalUser> otherUser = externalUserDao.findById(otherUserUsername);
+        if(otherUser.isPresent()) {
+            Optional<Log> log = logDao.findByCurrentUserAndOtherUser(currentUser, otherUser.get());
 
-        if (log.isPresent()) {
-            String[] logSplit = log.get().getLog().split(";");
+            if (log.isPresent()) {
+                String[] logSplit = log.get().getLog().split(";");
 
-            for (String message : logSplit) {
-                addMessage(tab, message);
+                for (String message : logSplit) {
+                    addMessage(tab, message);
+                }
             }
         }
     }
@@ -125,22 +121,21 @@ public class ChatService {
         }
     }
 
-    public boolean sendMessage(String otherUsername, String username , String message) {
+    public boolean sendMessage(String otherUsername, User currentUser , String message) {
         Optional<ExternalUser> userOp = externalUserDao.findById(otherUsername);
 
         if (userOp.isPresent()) {
 
             ExternalUser user = userOp.get();
-            User currentUser = dao.findById(username).get();
 
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            String jsonObject = new JSONObject().put("username", username).put("message", message)
+            String jsonObject = new JSONObject().put("username", currentUser.getUsername()).put("message", message)
                     .put("url", currentUser.getLocation()).toString();
 
-            HttpEntity<String> entity = new HttpEntity<String>(jsonObject, headers);
+            HttpEntity<String> entity = new HttpEntity<>(jsonObject, headers);
 
             try {
                 String messageResult = restTemplate.postForObject(user.getLocation() + "/message", entity, String.class);
@@ -153,10 +148,6 @@ public class ChatService {
             }
         }
         return false;
-    }
-
-    public Optional<User> getUser(String username) {
-        return dao.findById(username);
     }
 
     /**

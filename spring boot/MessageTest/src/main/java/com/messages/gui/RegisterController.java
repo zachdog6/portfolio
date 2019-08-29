@@ -4,13 +4,12 @@ import java.io.IOException;
 import java.net.URL;
 
 import com.messages.service.RegisterService;
+import com.messages.util.WebPages;
 import javafx.scene.control.PasswordField;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
-import com.messages.dao.UserDao;
 import com.messages.model.User;
 
 import javafx.fxml.FXML;
@@ -21,18 +20,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-/**
- * Controller for register.fxml
- * 
- * @author Zachary Karamanlis
- *
- */
 @Component
 public class RegisterController {
 
-	@Autowired
 	private RegisterService registerService;
-	@Autowired
 	private ApplicationContext context;
 	
 	@FXML
@@ -44,11 +35,11 @@ public class RegisterController {
 	@FXML
 	private Text err;
 
-	/**
-	 * adds data to database, then redirects to login page
-	 * 
-	 * @throws IOException
-	 */
+	public RegisterController(RegisterService registerService, ApplicationContext context) {
+		this.registerService = registerService;
+		this.context = context;
+	}
+
 	@FXML
 	public void register() throws IOException {
 		if(!registerService.userExists(username.getText())) {
@@ -61,7 +52,7 @@ public class RegisterController {
 			
 			registerService.saveUser(user);
 			
-			URL loginPage = (new ClassPathResource("LoginPage.fxml")).getURL();
+			URL loginPage = (new ClassPathResource(WebPages.LOGIN_PAGE)).getURL();
 			FXMLLoader loader = new FXMLLoader(loginPage);
 			loader.setControllerFactory(context::getBean);
 			Parent root = loader.load();
@@ -80,7 +71,7 @@ public class RegisterController {
 	
 	@FXML
 	public void back() throws IOException {
-		URL loginPage = (new ClassPathResource("LoginPage.fxml")).getURL();
+		URL loginPage = (new ClassPathResource(WebPages.LOGIN_PAGE)).getURL();
 		FXMLLoader loader = new FXMLLoader(loginPage);
 		loader.setControllerFactory(context::getBean);
 		Parent root = loader.load();

@@ -5,8 +5,8 @@ import java.net.URL;
 import java.util.Optional;
 
 import com.messages.service.LoginService;
+import com.messages.util.WebPages;
 import javafx.scene.control.PasswordField;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -33,11 +33,8 @@ import javafx.stage.Stage;
 @Component
 public class LoginController {
 
-	@Autowired
 	private ApplicationContext context;
-	@Autowired
 	private LoginService loginService;
-	@Autowired
 	private ChatController chat;
 	
 	@FXML
@@ -49,9 +46,15 @@ public class LoginController {
 	@FXML
 	private Button register;
 
+	public LoginController(ApplicationContext context, LoginService loginService, ChatController chat) {
+		this.context = context;
+		this.loginService = loginService;
+		this.chat = chat;
+	}
+
 	@FXML
 	public void register() throws IOException {
-		URL registerPage = (new ClassPathResource("register.fxml")).getURL();
+		URL registerPage = (new ClassPathResource(WebPages.REGISTER)).getURL();
 		FXMLLoader loader = new FXMLLoader(registerPage);
 		loader.setControllerFactory(context::getBean);
 		Parent root = loader.load();
@@ -75,7 +78,7 @@ public class LoginController {
 
 		User user = userSearch.get();
 
-		URL loginPage = (new ClassPathResource("chat.fxml")).getURL();
+		URL loginPage = (new ClassPathResource(WebPages.CHAT)).getURL();
 		FXMLLoader loader = new FXMLLoader(loginPage);
 		loader.setControllerFactory(context::getBean);
 		Parent root = loader.load();
@@ -95,6 +98,6 @@ public class LoginController {
 		stage.setScene(scene);
 		stage.setTitle("Chat Window");
 
-		chat.setUsername(username.getText());
+		chat.setUsername(user);
 	}
 }

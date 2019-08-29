@@ -1,28 +1,17 @@
 package com.messages.gui;
 
+import com.messages.model.Message;
+import com.messages.model.User;
+import com.messages.service.ChatService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Optional;
 
-import com.messages.model.ExternalUser;
-import com.messages.service.ChatService;
+import com.messages.util.WebPages;
 import javafx.stage.Popup;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
-
-import com.messages.model.Log;
-import com.messages.model.Message;
-import com.messages.model.User;
+import org.springframework.web.bind.annotation.*;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -43,11 +32,10 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 public class ChatController {
 
-	@Autowired
 	private ChatService chatService;
 
-	private String username;
-	private static Popup popup;
+	private User currentUser;
+	private Popup popup;
 
 	@FXML
 	private TabPane tabPane;
@@ -56,19 +44,27 @@ public class ChatController {
 	@FXML
 	private TextField newConnectionString;
 
-	/**
-	 * Clears currently selected tab of messages, both on screen and in database
-	 */
+	private static final String NO_TAB_ERROR = "Need to connect to a user first!";
+
+	ChatController(ChatService chatService) {
+		this.chatService = chatService;
+	}
+
 	@FXML
 	public void clear() {
-			Tab tab = tabPane.getSelectionModel().getSelectedItem();
+		Tab tab = tabPane.getSelectionModel().getSelectedItem();
 
-			AnchorPane anchor = (AnchorPane) tab.getContent();
-			ScrollPane scroll = (ScrollPane) anchor.getChildren().get(0);
-			VBox vBox = (VBox) scroll.getContent();
-			vBox.getChildren().clear();
+		if(tabPane.getSelectionModel().getSelectedItem() == null) {
+			textArea.setText(NO_TAB_ERROR);
+			return;
+		}
 
-			chatService.deleteLogs(username, tab.getText());
+		AnchorPane anchor = (AnchorPane) tab.getContent();
+		ScrollPane scroll = (ScrollPane) anchor.getChildren().get(0);
+		VBox vBox = (VBox) scroll.getContent();
+		vBox.getChildren().clear();
+
+		chatService.deleteLogs(currentUser, tab.getText());
 	}
 
 	/**
@@ -77,6 +73,11 @@ public class ChatController {
 	@FXML
 	public void saveChat() {
 			Tab tab = tabPane.getSelectionModel().getSelectedItem();
+
+		if(tabPane.getSelectionModel().getSelectedItem() == null) {
+			textArea.setText(NO_TAB_ERROR);
+			return;
+		}
 
 			AnchorPane anchor = (AnchorPane) tab.getContent();
 			ScrollPane scroll = (ScrollPane) anchor.getChildren().get(0);
@@ -95,40 +96,38 @@ public class ChatController {
 				}
 			}
 
-			chatService.saveLog(username, tab.getText(), log.toString());
+			chatService.saveLog(currentUser, tab.getText(), log.toString());
 	}
 
 	@FXML
 	public void openNewUserPopup() throws IOException {
-		URL newConnectionPopup = (new ClassPathResource("popup.fxml")).getURL();
+		URL newConnectionPopup = (new ClassPathResource(WebPages.NEW_EXTERNAL_USER)).getURL();
 		FXMLLoader loader = new FXMLLoader(newConnectionPopup);
 		loader.setController(this);
 
 		popup = new Popup();
+		popup.setAutoFix(true);
+		popup.setAutoHide(true);
 		popup.getContent().add(loader.load());
 		popup.show(textArea.getScene().getWindow());
 	}
 
 	@FXML
 	public void openSharePopup() throws IOException {
-		URL sharePopup = (new ClassPathResource("share.fxml")).getURL();
+		URL sharePopup = (new ClassPathResource(WebPages.SHARE)).getURL();
 		FXMLLoader loader = new FXMLLoader(sharePopup);
 		loader.setController(this);
 
 		popup = new Popup();
+		popup.setAutoFix(true);
+		popup.setAutoHide(true);
 		popup.getContent().add(loader.load());
 
 		TextField yourConnectionString = (TextField) popup.getScene().lookup("#yourConnectionString");
 
-		User user = chatService.getUser(username).get();
-		yourConnectionString.setText(user.getUsername() + ";" + user.getLocation());
+		yourConnectionString.setText(currentUser.getUsername() + ";" + currentUser.getLocation());
 
 		popup.show(textArea.getScene().getWindow());
-	}
-
-	@FXML
-	public void closePopup() {
-		popup.hide();
 	}
 
 	@FXML
@@ -136,18 +135,22 @@ public class ChatController {
 
 		String[] connnectionString = newConnectionString.getText().split(";");
 
+		if(connnectionString.length != 2) {
+			newConnectionString.setText("Enter A Valid Connection String");
+			return;
+		}
+
 		String name = connnectionString[0];
 		String url = connnectionString[1];
 
-		InputStream chat = (new ClassPathResource("tab.fxml")).getInputStream();
+		InputStream chat = (new ClassPathResource(WebPages.TAB)).getInputStream();
 		Tab tab = (new FXMLLoader()).load(chat);
 		tab.setText(name);
 
-        if(!chatService.addNewExternalUser(name, url, tab)) {
+        if(!chatService.addNewExternalUser(name, currentUser, url, tab)) {
             newConnectionString.setText("Could Not Connect to User");
             return;
         }
-        chatService.addLogs(tab, username, name);
 
 		tabPane.getTabs().add(tab);
 
@@ -164,18 +167,23 @@ public class ChatController {
 	public void send() {
 		
 		if(textArea.getText().contains(":") || textArea.getText().contains(";")) {
-			textArea.setText(": and ; are invalid chatacters!");
+			textArea.setText(": and ; are invalid characters!");
 			return;
 		}
 		
 		if(textArea.getText().equals("")) {
-			textArea.setText("Cannot send Nothing!");
+			textArea.setText("Cannot send nothing!");
+			return;
+		}
+
+		if(tabPane.getSelectionModel().getSelectedItem() == null) {
+			textArea.setText(NO_TAB_ERROR);
 			return;
 		}
 
 		String otherUsername = tabPane.getSelectionModel().getSelectedItem().getText();
 		
-        if(!chatService.sendMessage(otherUsername, username, textArea.getText())) {
+        if(!chatService.sendMessage(otherUsername, currentUser, textArea.getText())) {
             textArea.setText("user not logged in or cannot reach user");
             return;
         }
@@ -190,11 +198,11 @@ public class ChatController {
             }
 
             try {
-                InputStream chat = (new ClassPathResource("tab.fxml")).getInputStream();
+                InputStream chat = (new ClassPathResource(WebPages.TAB)).getInputStream();
                 Tab tab = (new FXMLLoader()).load(chat);
                 tab.setText(otherUsername);
 
-				chatService.addLogs(tab, username, otherUsername);
+				chatService.addLogs(tab, currentUser, otherUsername);
 				ChatService.addOutMessage(tab, textArea.getText());
 
                 tabPane.getTabs().add(tab);
@@ -212,12 +220,12 @@ public class ChatController {
         });
 	}
 
-	@RequestMapping("/test")
+	@GetMapping("/test")
 	public String testConnection() {
 		return "good";
 	}
 
-	@RequestMapping(value = { "/message" }, method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = { "/message" }, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public String postMessage(@RequestBody Message message, HttpServletRequest request) {
 
 		if (tabPane != null) {
@@ -232,13 +240,11 @@ public class ChatController {
 				}
 
 				try {
-					InputStream chat = (new ClassPathResource("tab.fxml")).getInputStream();
+					InputStream chat = (new ClassPathResource(WebPages.TAB)).getInputStream();
 					Tab tab = (new FXMLLoader()).load(chat);
 					tab.setText(message.getUsername());
 
-					if(chatService.addNewExternalUser(message.getUsername(), message.getUrl(), tab)) {
-
-						chatService.addLogs(tab, username, message.getUsername());
+					if(chatService.addNewExternalUser(message.getUsername(), currentUser, message.getUrl(), tab)) {
 						ChatService.addInMessage(tab, message.getMessage());
 
 						tabPane.getTabs().add(tab);
@@ -256,12 +262,13 @@ public class ChatController {
 
 			});
 
-			return "Message Recieved";
-		} else
-			return "User Not Logged In";
+			return "Message Received";
+		} else {
+            return "User Not Logged In";
+        }
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUsername(User currentUser) {
+		this.currentUser = currentUser;
 	}
 }
