@@ -44,7 +44,7 @@ module.exports.getAll = (res) => {
 };
 
 module.exports.getById = (res, id) => {
-    EmployeeDB.findById(id, { raw: true, }).then(employee => {
+    EmployeeDB.findByPk(id, { raw: true, }).then(employee => {
         if (employee === null) {
             res.status(400).send("employee with id " + id + " does not exist");
         } else {
@@ -61,7 +61,7 @@ module.exports.getById = (res, id) => {
  * @param {*} cb function to call with result when query is complete
  */
 module.exports.idCheck = (res, id, cb) => {
-    EmployeeDB.findById(id, { raw: true, }).then(employee => {
+    EmployeeDB.findByPk(id, { raw: true, }).then(employee => {
         if (employee === null) {
             cb(false);
         } else {
