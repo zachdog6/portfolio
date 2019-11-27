@@ -1,0 +1,13 @@
+doctype html
+html
+    head
+        title Example Express
+        style
+            include style.css
+    body
+        include header.pug
+        div.content
+            ul
+                each file in files
+                    li #{file} 
+                        a(href="/files/download/" + file) download

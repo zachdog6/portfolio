@@ -1,0 +1,16 @@
+doctype html
+html
+    head
+        title Example Express
+        style
+            include style.css
+            include upload_style.css
+    body
+        include header.pug
+        div.content
+            h3 Upload File
+            form(action="/files/upload", method="post", enctype="multipart/form-data")
+                label(for="file") Select File to Upload:
+                input#file(type="file", name="file")
+                br
+                button(type="submit") submit

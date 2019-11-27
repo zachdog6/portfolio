@@ -1,0 +1,23 @@
+body {
+    background-color: #d2c08c;
+    margin: 0;
+}
+.content {
+    margin: auto;
+    width: fit-content;
+    overflow: auto;
+}
+h3{
+    margin: 10px auto;
+    width: fit-content;
+}
+.header {
+    width: 100%;
+    padding:10px;
+    background-color: whitesmoke;
+    box-shadow: 0 8px 6px -6px black;
+}
+.header a {
+    color: black;
+    margin: 0 10px;
+}

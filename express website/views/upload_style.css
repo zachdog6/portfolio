@@ -1,0 +1,12 @@
+form{
+    margin:auto;
+    margin-bottom: 10px;
+    width: fit-content;
+}
+form input{
+    display: block;
+    margin-bottom: 5px;
+}
+button{
+    margin-top: 5px;
+}
