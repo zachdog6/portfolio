@@ -1,0 +1,1 @@
+Small JavaFX app that turns images into pixelated versions of them
