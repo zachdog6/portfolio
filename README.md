@@ -9,3 +9,4 @@ Each project has it's own README and Images of the completed application.
 3. WeatherApp: Small android app. Displays weather information from weather.gov api, and generates charts from the temperature information.
 4. Express Website: Small express website used to demonstrate node concepts to newer coworkers
 5. pixel generator: turns images into a pixelated version of the image.
+6. accounting managment: accounting website written in node that stores images/credentials in AWS and user data in a local sqlite db
