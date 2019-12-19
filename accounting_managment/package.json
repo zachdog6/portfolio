@@ -1,0 +1,29 @@
+{
+  "name": "accounting-managment",
+  "version": "1.0.0",
+  "description": "Accounting Website that Parses Receits in AWS for use by Accounting Personel",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "nodemon ./bin/www"
+  },
+  "author": "Zachary Karamanlis",
+  "license": "ISC",
+  "dependencies": {
+    "amazon-cognito-identity-js": "^3.2.1",
+    "aws-amplify": "^2.2.1",
+    "aws-sdk": "^2.594.0",
+    "body-parser": "^1.19.0",
+    "debug": "~2.6.9",
+    "dotenv": "^8.2.0",
+    "express": "~4.16.1",
+    "express-session": "^1.17.0",
+    "http-errors": "~1.6.3",
+    "morgan": "~1.9.1",
+    "multer": "^1.4.2",
+    "node-fetch": "^2.6.0",
+    "nodemon": "^2.0.2",
+    "pug": "^2.0.4",
+    "sequelize": "^5.21.3",
+    "sqlite3": "^4.1.1"
+  }
+}

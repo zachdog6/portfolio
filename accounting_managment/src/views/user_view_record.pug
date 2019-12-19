@@ -1,0 +1,29 @@
+extends layout
+
+include user_header.pug
+block content
+    h1#title Record #{record.id}
+    h2#error= err
+    table#recordTable
+            - var reviewer = record.validator ? record.validator : "NA"
+            - var background = record.status === "Under Review" ? "#ffff67" : record.status === "Approved" ? "lightgreen" : "red"
+            - var total = record.total < 1 ? "$0" + record.total : "$" + record.total
+
+            tr
+                th Cost
+                th Status
+                th Reviewer
+                th
+            tr.recordRow(style={background:background})
+                td= total
+                td= record.status
+                td= reviewer
+                td
+                    a(href="/user/delete/" + record.id)
+                        button Delete
+    if images.length > 0
+        div#imageList
+            each image in images
+                img.thumbnail(src="/image/" + image, alt="receit")
+    else
+        p.center No Submitted Receits

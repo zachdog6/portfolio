@@ -1,0 +1,13 @@
+doctype html
+html
+  head
+    title= title
+    style
+        include style.css
+  body
+    div#header
+        a(href="/") home
+    div.center
+        h1= message
+        h2= error.status
+        pre #{error.stack}

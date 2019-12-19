@@ -1,0 +1,15 @@
+{
+	"auth": {
+		"accountingmanagmentf28d46ea": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation",
+			"dependsOn": []
+		}
+	},
+	"storage": {
+		"images": {
+			"service": "S3",
+			"providerPlugin": "awscloudformation"
+		}
+	}
+}

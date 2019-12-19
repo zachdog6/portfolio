@@ -1,0 +1,48 @@
+extends layout
+
+include user_header.pug
+block content
+    h2#error= err
+    h2#msg= msg
+    p
+        b Please enter your receits for processing
+    form(action="/user/upload", method="post", enctype="multipart/form-data")
+        label(for="images") Select Receits: 
+        input#images(type="file", name="images", accept="image/*", multiple)
+        br
+        br
+        lablel(for="total") Total Cost: $
+        input#total(type="number", name="total", min=".01" step="any")
+        br
+        br
+        div#imageList
+            output#result
+        br
+        input(type="submit", value="Submit")
+
+    //credit goes to https://stackoverflow.com/questions/20779983/multiple-image-upload-and-preview
+    script.
+        if(window.File && window.FileList && window.FileReader)
+        {
+            var filesInput = document.getElementById('images');
+            filesInput.addEventListener('change', function(event){
+                var files = event.target.files;
+                var output = document.getElementById('result');
+                for(var i = 0; i< files.length; i++)
+                {
+                    var file = files[i];
+                    if(!file.type.match('image'))
+                        continue;
+                    var picReader = new FileReader();
+                    picReader.addEventListener('load',function(event){
+                        var picFile = event.target;
+                        var div = document.createElement('div');
+                        div.setAttribute("class", "imageDiv");
+                        div.innerHTML = '<img class="thumbnail" src="' + picFile.result + '"' +
+                        'title="' + picFile.name + '"/>';
+                        output.insertBefore(div,null);
+                    });
+                    picReader.readAsDataURL(file);
+                }
+            });
+        }

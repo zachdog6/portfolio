@@ -1,0 +1,33 @@
+extends layout
+
+include user_header.pug
+block content
+    h1#title Welcome to Records Managment: User Site!
+    h2#error= err
+    h2.center Previous Records
+    if records.length > 0
+        table#recordTable
+            tr
+                th Record
+                th Cost
+                th Status
+                th Reviewer
+                th
+                th
+            each record in records
+                - var reviewer = record.validator ? record.validator : "NA"
+                - var background = record.status === "Under Review" ? "#ffff67" : record.status === "Approved" ? "lightgreen" : "red"
+                - var total = record.total < 1 ? "$0" + record.total : "$" + record.total
+                tr.recordRow(style={background:background})
+                    td= record.id
+                    td= total
+                    td= record.status
+                    td= reviewer
+                    td
+                        a(href="/user/delete/" + record.id)
+                            button Delete
+                    td
+                        a(href="/user/view/" + record.id)
+                            button Details
+    else
+        p.center No Previously Submitted Records

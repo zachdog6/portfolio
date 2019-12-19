@@ -1,0 +1,24 @@
+html
+  head
+    title Authorization
+    style
+        include login.css
+  body
+    div.content
+        h1#title Complete Registration
+        p Please enter the code sent to your email to complete your registration
+        h2#error= err
+        form(action="/login/auth/" + username + "/" + role, method="post")
+            table
+                tr
+                    td
+                        label(for="code") Code 
+                    td
+                        input(type="text", name="code")
+                tr
+                    td(colspan=2)
+                        input(type="submit", value="Submit")
+                tr
+                    td(colspan=2)
+                        a(href="/login")
+                            button(type="button") Back

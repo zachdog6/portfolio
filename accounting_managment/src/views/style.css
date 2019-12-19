@@ -1,0 +1,68 @@
+body {
+  background-color: #d9c09e;
+  margin: 0;
+}
+#header{
+    padding: 1px;
+    background-color:black;
+    height: fit-content;
+    color:white;
+    position: relative;
+}
+#header a {
+    margin: 0 3px;
+    text-decoration: none;
+    color:white;
+    padding: 10px 2px;
+    display: inline-block;
+    font-size: 1.2rem;
+}
+#header a:hover{
+    background-color: lightgray;
+}
+#title {
+    width: fit-content;
+    margin: 20px auto;
+}
+.thumbnail{
+    height: 150px;
+    margin: 10px;
+}
+.imageDiv{
+    width: fit-content;
+    display: inline-block;
+}
+#imageList{
+    width: 40vw;
+}
+#error{
+    color: red;
+    width: fit-content;
+    margin: 5px auto;
+}
+#msg{
+    width: fit-content;
+    margin: 5px auto;
+}
+#recordTable{
+    text-align: center;
+    border-collapse: collapse;
+    width: fit-content;
+    margin: auto;
+}
+.recordRow td{
+    padding: 1px 5px;
+}
+.center{
+    width: fit-content;
+    margin: auto;
+}
+.headerTitle{
+    margin: 0;
+    position: absolute;
+    left: 50%;
+    top:10px;
+}
+#total{
+    width: 100px;
+}

@@ -1,0 +1,19 @@
+{
+    "ams": {
+        "awscloudformation": {
+            "AuthRoleName": "accountingmanagment-ams-20191209160743-authRole",
+            "UnauthRoleArn": "arn:aws:iam::972855425763:role/accountingmanagment-ams-20191209160743-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::972855425763:role/accountingmanagment-ams-20191209160743-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "accountingmanagment-ams-20191209160743-deployment",
+            "UnauthRoleName": "accountingmanagment-ams-20191209160743-unauthRole",
+            "StackName": "accountingmanagment-ams-20191209160743",
+            "StackId": "arn:aws:cloudformation:us-east-1:972855425763:stack/accountingmanagment-ams-20191209160743/544e2a70-1ad0-11ea-aa34-1288d43a03c2"
+        },
+        "categories": {
+            "auth": {
+                "accountingmanagmentf28d46ea": {}
+            }
+        }
+    }
+}

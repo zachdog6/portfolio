@@ -1,0 +1,1 @@
+Node website for receipt management using AWS to store images/credentials and a local sqlite server to store user and image data.

@@ -1,0 +1,52 @@
+{
+	"providers": {
+		"awscloudformation": {
+			"AuthRoleName": "accountingmanagment-ams-20191209160743-authRole",
+			"UnauthRoleArn": "arn:aws:iam::972855425763:role/accountingmanagment-ams-20191209160743-unauthRole",
+			"AuthRoleArn": "arn:aws:iam::972855425763:role/accountingmanagment-ams-20191209160743-authRole",
+			"Region": "us-east-1",
+			"DeploymentBucketName": "accountingmanagment-ams-20191209160743-deployment",
+			"UnauthRoleName": "accountingmanagment-ams-20191209160743-unauthRole",
+			"StackName": "accountingmanagment-ams-20191209160743",
+			"StackId": "arn:aws:cloudformation:us-east-1:972855425763:stack/accountingmanagment-ams-20191209160743/544e2a70-1ad0-11ea-aa34-1288d43a03c2"
+		}
+	},
+	"auth": {
+		"accountingmanagmentf28d46ea": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation",
+			"dependsOn": [],
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/accountingmanagment-ams-20191209160743-deployment/amplify-cfn-templates/auth/accountingmanagmentf28d46ea-cloudformation-template.yml",
+				"logicalId": "authaccountingmanagmentf28d46ea"
+			},
+			"lastPushTimeStamp": "2019-12-12T19:34:05.759Z",
+			"output": {
+				"AppClientSecret": "ijmnm96169bp68vv17n4o6d27pm717q3t9ftkbvginsklmcesc3",
+				"UserPoolId": "us-east-1_yUrdU1uC6",
+				"AppClientIDWeb": "2f1hfs2q6rq2u5skskbaf1gddi",
+				"AppClientID": "1egabqpo8bo1k59129tka6onpi",
+				"IdentityPoolId": "us-east-1:b30a2888-643b-43d6-a4a8-c04711e801e1",
+				"IdentityPoolName": "accountingmanagmentf28d46ea_identitypool_f28d46ea__ams",
+				"UserPoolName": "accountingmanagmentf28d46ea_userpool_f28d46ea"
+			},
+			"lastPushDirHash": "GQdh+/JcqXwLn7JjiwjP4pLT9cs="
+		}
+	},
+	"storage": {
+		"images": {
+			"service": "S3",
+			"providerPlugin": "awscloudformation",
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/accountingmanagment-ams-20191209160743-deployment/amplify-cfn-templates/storage/s3-cloudformation-template.json",
+				"logicalId": "storageimages"
+			},
+			"lastPushTimeStamp": "2019-12-12T19:34:05.761Z",
+			"output": {
+				"BucketName": "accounting-managment-images-ams",
+				"Region": "us-east-1"
+			},
+			"lastPushDirHash": "M//XDVzzefMW2W9SCJIDdeH91es="
+		}
+	}
+}
